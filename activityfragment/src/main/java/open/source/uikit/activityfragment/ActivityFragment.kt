@@ -4,6 +4,7 @@ package open.source.uikit.activityfragment
 
 import android.app.Activity
 import android.app.LocalActivityManager
+import android.app.callOnActivityResult
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -111,8 +112,7 @@ class ActivityFragment : Fragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val activity = manager?.currentActivity ?: return
-        onActivityResultMethod.invoke(activity, requestCode, resultCode, data)
+        manager?.currentActivity?.callOnActivityResult(requestCode, resultCode, data)
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -166,17 +166,6 @@ class ActivityFragment : Fragment() {
     }
 
     companion object {
-
-        private val onActivityResultMethod by lazy {
-            Activity::class.java.getDeclaredMethod(
-                "onActivityResult",
-                Int::class.javaPrimitiveType,
-                Int::class.javaPrimitiveType,
-                Intent::class.java
-            ).apply {
-                isAccessible = true
-            }
-        }
 
         private val mWhoField by lazy {
             android.app.Fragment::class.java

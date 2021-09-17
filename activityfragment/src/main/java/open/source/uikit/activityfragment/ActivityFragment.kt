@@ -17,10 +17,17 @@ import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import java.util.*
+import kotlin.collections.HashMap
 
 class ActivityFragment : Fragment() {
 
+    private val noConfig = ViewModelProvider(
+        viewModelStore,
+        ViewModelProvider.NewInstanceFactory()
+    )[NonConfigViewModel::class.java]
     private var manager: LocalActivityManager? = null
     private var who: String? = null
 
@@ -41,7 +48,8 @@ class ActivityFragment : Fragment() {
         super.onCreate(savedInstanceState)
         manager?.dispatchCreate(savedInstanceState?.getBundle(STATE_KEY))
         who = savedInstanceState?.getString(WHO_KEY) ?: UUID.randomUUID().toString()
-        val fm = requireActivity().fragmentManager
+        val activity = requireActivity()
+        val fm = activity.fragmentManager
         val old = fm.findFragmentByTag(who)
         if (old == null) {
             val dispatcher = ActivityResultDispatcher()
@@ -55,10 +63,23 @@ class ActivityFragment : Fragment() {
                 ?.toUri(Intent.URI_INTENT_SCHEME) != intent?.toUri(Intent.URI_INTENT_SCHEME)
         ) {
             manager?.removeAllActivities()
+            val instance = noConfig.instance
+            var restore: Any? = null
+            if (instance != null) {
+                restore = mLastNonConfigurationInstancesField.get(activity)
+                val temp = newNonConfigurationInstances.newInstance()
+                val map = HashMap<String?, Any>()
+                map[who] = instance
+                childrenField.set(temp, map)
+                mLastNonConfigurationInstancesField.set(activity, temp)
+            }
             manager?.startActivity(
                 who,
                 intent
             )
+            if (instance != null) {
+                mLastNonConfigurationInstancesField.set(activity, restore)
+            }
         }
     }
 
@@ -92,7 +113,12 @@ class ActivityFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        manager?.dispatchDestroy(requireActivity().isFinishing)
+        val isFinishing = requireActivity().isFinishing
+        val activity = manager?.currentActivity
+        if (!isFinishing && activity != null) {
+            noConfig.instance = activity.onRetainNonConfigurationInstance()
+        }
+        manager?.dispatchDestroy(isFinishing)
     }
 
     override fun onDetach() {
@@ -165,11 +191,45 @@ class ActivityFragment : Fragment() {
         }
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    internal class NonConfigViewModel : ViewModel() {
+        var instance: Any? = null
+
+        override fun onCleared() {
+            instance = null
+        }
+    }
+
     companion object {
 
         private val mWhoField by lazy {
             android.app.Fragment::class.java
                 .getDeclaredField("mWho")
+                .apply {
+                    isAccessible = true
+                }
+        }
+
+        private val mLastNonConfigurationInstancesField by lazy {
+            Activity::class.java
+                .getDeclaredField("mLastNonConfigurationInstances")
+                .apply {
+                    isAccessible = true
+                }
+        }
+
+        private val newNonConfigurationInstances by lazy {
+            mLastNonConfigurationInstancesField
+                .type.getDeclaredConstructor()
+                .apply {
+                    isAccessible = true
+                }
+        }
+
+        private val childrenField by lazy {
+            mLastNonConfigurationInstancesField
+                .type
+                .getDeclaredField("children")
                 .apply {
                     isAccessible = true
                 }

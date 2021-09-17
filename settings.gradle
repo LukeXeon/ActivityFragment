@@ -1,0 +1,3 @@
+include ':activityfragment'
+include ':app'
+rootProject.name = "ActivityFragment"

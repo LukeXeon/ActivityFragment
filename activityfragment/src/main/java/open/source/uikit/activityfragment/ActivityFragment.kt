@@ -194,10 +194,6 @@ class ActivityFragment : Fragment() {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     internal class NonConfigViewModel : ViewModel() {
         var instance: Any? = null
-
-        override fun onCleared() {
-            instance = null
-        }
     }
 
     companion object {

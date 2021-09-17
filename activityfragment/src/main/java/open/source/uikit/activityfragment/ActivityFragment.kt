@@ -24,7 +24,7 @@ import kotlin.collections.HashMap
 
 class ActivityFragment : Fragment() {
 
-    private val noConfig = ViewModelProvider(
+    private val nonConfig = ViewModelProvider(
         viewModelStore,
         ViewModelProvider.NewInstanceFactory()
     )[NonConfigViewModel::class.java]
@@ -63,7 +63,7 @@ class ActivityFragment : Fragment() {
                 ?.toUri(Intent.URI_INTENT_SCHEME) != intent?.toUri(Intent.URI_INTENT_SCHEME)
         ) {
             manager?.removeAllActivities()
-            val instance = noConfig.instance
+            val instance = nonConfig.instance
             var restore: Any? = null
             if (instance != null) {
                 restore = mLastNonConfigurationInstancesField.get(activity)
@@ -79,6 +79,7 @@ class ActivityFragment : Fragment() {
             )
             if (instance != null) {
                 mLastNonConfigurationInstancesField.set(activity, restore)
+                nonConfig.instance = null
             }
         }
     }
@@ -116,7 +117,7 @@ class ActivityFragment : Fragment() {
         val isFinishing = requireActivity().isFinishing
         val activity = manager?.currentActivity
         if (!isFinishing && activity != null) {
-            noConfig.instance = activity.onRetainNonConfigurationInstance()
+            nonConfig.instance = activity.onRetainNonConfigurationInstance()
         }
         manager?.dispatchDestroy(isFinishing)
     }

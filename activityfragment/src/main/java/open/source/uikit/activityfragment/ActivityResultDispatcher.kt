@@ -5,7 +5,6 @@ package open.source.uikit.activityfragment
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -77,6 +76,20 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
                     t.commitNow()
                 } else {
                     t.commit()
+                }
+            }
+        }
+
+        fun onDestroy(activity: Activity, who: String?) {
+            val fm = activity.fragmentManager
+            val f = fm.findFragmentByTag(who)
+            if (f != null && !fm.isDestroyed) {
+                val t = fm.beginTransaction()
+                    .remove(f)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    t.commitNowAllowingStateLoss()
+                } else {
+                    t.commitAllowingStateLoss()
                 }
             }
         }

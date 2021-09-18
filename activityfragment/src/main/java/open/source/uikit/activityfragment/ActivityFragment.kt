@@ -83,7 +83,9 @@ class ActivityFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        manager?.dispatchDestroy(requireActivity().isFinishing)
+        val activity = requireActivity()
+        ActivityResultDispatcher.onDestroy(activity, who)
+        manager?.dispatchDestroy(activity.isFinishing)
     }
 
     override fun onDetach() {

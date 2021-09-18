@@ -13,6 +13,10 @@ import androidx.fragment.app.FragmentManager
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class ActivityResultDispatcher : android.app.Fragment() {
 
+    init {
+        retainInstance = true
+    }
+
     private fun findTargetFragment(
         fm: FragmentManager = (activity as FragmentActivity)
             .supportFragmentManager,

@@ -71,15 +71,16 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
         fun onCreate(activity: Activity, who: String?) {
             val fm = activity.fragmentManager
             var f = fm.findFragmentByTag(who)
-            if (f == null) {
+            if (f == null && !fm.isDestroyed) {
                 f = ActivityResultDispatcher()
                 val t = fm.beginTransaction()
                     .add(f, who)
                     .hide(f)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    t.commitNow()
+                    t.commitNowAllowingStateLoss()
                 } else {
-                    t.commit()
+                    t.commitAllowingStateLoss()
+                    fm.executePendingTransactions()
                 }
             }
         }
@@ -94,6 +95,7 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
                     t.commitNowAllowingStateLoss()
                 } else {
                     t.commitAllowingStateLoss()
+                    fm.executePendingTransactions()
                 }
             }
         }

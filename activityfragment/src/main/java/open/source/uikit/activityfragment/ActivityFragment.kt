@@ -4,7 +4,6 @@ package open.source.uikit.activityfragment
 
 import android.app.Activity
 import android.app.LocalActivityManager
-import android.app.callOnActivityResult
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -13,23 +12,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import java.util.*
-import kotlin.collections.HashMap
 
 class ActivityFragment : Fragment() {
-
-    private val nonConfig = ViewModelProvider(
-        viewModelStore,
-        ViewModelProvider.NewInstanceFactory()
-    )[NonConfigViewModel::class.java]
     private var manager: LocalActivityManager? = null
-    private var who: String? = null
+    internal var who: String? = null
 
     var intent: Intent?
         get() = arguments?.getParcelable(INTENT_KEY)
@@ -41,21 +29,23 @@ class ActivityFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        manager = LocalActivityManager(requireActivity(), true)
+        val activity = requireActivity()
+        manager = LocalActivityManager(activity, true)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        who = savedInstanceState?.getString(WHO_KEY) ?: "activity_fragment:" + UUID.randomUUID()
         manager?.dispatchCreate(savedInstanceState?.getBundle(STATE_KEY))
-        who = savedInstanceState?.getString(WHO_KEY) ?: UUID.randomUUID().toString()
         val activity = requireActivity()
         val fm = activity.fragmentManager
-        val old = fm.findFragmentByTag(who)
-        if (old == null) {
+        if (fm.findFragmentByTag(who) == null) {
             val dispatcher = ActivityResultDispatcher()
             dispatcher.who = who
-            fm.beginTransaction()
+            requireActivity().fragmentManager
+                .beginTransaction()
                 .add(dispatcher, who)
+                .hide(dispatcher)
                 .commit()
         }
         val intent = intent
@@ -63,24 +53,10 @@ class ActivityFragment : Fragment() {
                 ?.toUri(Intent.URI_INTENT_SCHEME) != intent?.toUri(Intent.URI_INTENT_SCHEME)
         ) {
             manager?.removeAllActivities()
-            val instance = nonConfig.instance
-            var restore: Any? = null
-            if (instance != null) {
-                restore = mLastNonConfigurationInstancesField.get(activity)
-                val temp = newNonConfigurationInstances.newInstance()
-                val map = HashMap<String?, Any>()
-                map[who] = instance
-                childrenField.set(temp, map)
-                mLastNonConfigurationInstancesField.set(activity, temp)
-            }
             manager?.startActivity(
                 who,
-                intent
+                WrapIntent(intent)
             )
-            if (instance != null) {
-                mLastNonConfigurationInstancesField.set(activity, restore)
-                nonConfig.instance = null
-            }
         }
     }
 
@@ -114,12 +90,7 @@ class ActivityFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        val isFinishing = requireActivity().isFinishing
-        val activity = manager?.currentActivity
-        if (!isFinishing && activity != null) {
-            nonConfig.instance = activity.onRetainNonConfigurationInstance()
-        }
-        manager?.dispatchDestroy(isFinishing)
+        manager?.dispatchDestroy(requireActivity().isFinishing)
     }
 
     override fun onDetach() {
@@ -134,100 +105,30 @@ class ActivityFragment : Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        val activity = manager?.currentActivity ?: return
-        activity.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        manager?.currentActivity?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        manager?.currentActivity?.callOnActivityResult(requestCode, resultCode, data)
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    internal class ActivityResultDispatcher : android.app.Fragment() {
-
-        var who: String?
-            get() = arguments?.getString(WHO_KEY)
-            set(value) {
-                val args = arguments ?: Bundle()
-                args.putString(WHO_KEY, value)
-                arguments = args
-            }
-
-        private fun findTargetFragment(
-            fm: FragmentManager = (activity as FragmentActivity).supportFragmentManager,
-            who: String? = this.who
-        ): Fragment? {
-            for (f in fm.fragments) {
-                if (f is ActivityFragment && f.who == who) {
-                    return f
-                } else {
-                    val c = findTargetFragment(f.childFragmentManager, who)
-                    if (c != null) {
-                        return c
-                    }
-                }
-            }
-            return null
+        manager?.currentActivity?.let {
+            onActivityResultMethod.invoke(
+                it,
+                requestCode,
+                resultCode,
+                data
+            )
         }
-
-        override fun onAttach(activity: Activity?) {
-            super.onAttach(activity)
-            mWhoField.set(this, who)
-        }
-
-        override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
-        ) {
-            findTargetFragment()?.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
-
-        override fun onActivityResult(
-            requestCode: Int,
-            resultCode: Int,
-            data: Intent?
-        ) {
-            findTargetFragment()?.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    internal class NonConfigViewModel : ViewModel() {
-        var instance: Any? = null
     }
 
     companion object {
 
-        private val mWhoField by lazy {
-            android.app.Fragment::class.java
-                .getDeclaredField("mWho")
-                .apply {
-                    isAccessible = true
-                }
-        }
-
-        private val mLastNonConfigurationInstancesField by lazy {
+        private val onActivityResultMethod by lazy {
             Activity::class.java
-                .getDeclaredField("mLastNonConfigurationInstances")
-                .apply {
-                    isAccessible = true
-                }
-        }
-
-        private val newNonConfigurationInstances by lazy {
-            mLastNonConfigurationInstancesField
-                .type.getDeclaredConstructor()
-                .apply {
-                    isAccessible = true
-                }
-        }
-
-        private val childrenField by lazy {
-            mLastNonConfigurationInstancesField
-                .type
-                .getDeclaredField("children")
-                .apply {
+                .getDeclaredMethod(
+                    "onActivityResult",
+                    Int::class.javaPrimitiveType,
+                    Int::class.javaPrimitiveType,
+                    Intent::class.java
+                ).apply {
                     isAccessible = true
                 }
         }

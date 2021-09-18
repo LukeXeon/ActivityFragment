@@ -1,8 +1,8 @@
 package open.source.uikit.activityfragment.app
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import open.source.uikit.activityfragment.ActivityFragment
 
 class MainActivity : AppCompatActivity() {

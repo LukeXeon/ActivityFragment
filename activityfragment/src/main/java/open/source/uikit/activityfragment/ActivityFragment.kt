@@ -11,8 +11,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModelStore
 import java.util.*
 
 class ActivityFragment : Fragment() {
@@ -120,6 +123,18 @@ class ActivityFragment : Fragment() {
     }
 
     companion object {
+
+        @JvmStatic
+        fun getViewModelStore(activity: ComponentActivity): ViewModelStore? {
+            if (activity.parent == null) {
+                return activity.viewModelStore
+            }
+            return runCatching {
+                FragmentManager.findFragment<ActivityFragment>(
+                    activity.window.decorView
+                )
+            }.getOrNull()?.viewModelStore
+        }
 
         private val onActivityResultMethod by lazy {
             Activity::class.java

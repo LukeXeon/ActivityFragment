@@ -58,7 +58,10 @@ class ActivityFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return manager?.currentActivity?.window?.decorView
+        return (manager?.currentActivity?.window?.decorView as? ViewGroup)?.apply {
+            isFocusableInTouchMode = true
+            descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

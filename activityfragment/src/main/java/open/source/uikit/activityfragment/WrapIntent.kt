@@ -26,7 +26,7 @@ internal class WrapIntent : Intent {
         return Intent().apply {
             component = ComponentName(
                 componentName.packageName,
-                StubActivity::class.java.name
+                ShellActivity::class.java.name
             )
         }.resolveActivityInfo(pm, flags).apply {
             name = componentName.className

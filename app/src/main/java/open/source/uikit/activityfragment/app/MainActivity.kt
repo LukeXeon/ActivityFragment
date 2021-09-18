@@ -2,6 +2,7 @@ package open.source.uikit.activityfragment.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import open.source.uikit.activityfragment.ActivityFragment
 

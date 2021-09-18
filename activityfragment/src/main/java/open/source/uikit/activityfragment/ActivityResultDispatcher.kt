@@ -1,8 +1,10 @@
+@file:Suppress("DEPRECATION")
+
 package open.source.uikit.activityfragment
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
+import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -11,22 +13,10 @@ import androidx.fragment.app.FragmentManager
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class ActivityResultDispatcher : android.app.Fragment() {
 
-    var who: String?
-        get() = arguments?.getString(WHO_KEY)
-        set(value) {
-            val args = arguments ?: Bundle()
-            args.putString(WHO_KEY, value)
-            arguments = args
-        }
-
-    init {
-        retainInstance = true
-    }
-
     private fun findTargetFragment(
         fm: FragmentManager = (activity as FragmentActivity)
             .supportFragmentManager,
-        who: String? = this.who
+        who: String? = tag
     ): Fragment? {
         for (f in fm.fragments) {
             if (f is ActivityFragment) {
@@ -45,7 +35,7 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
 
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
-        mWhoField.set(this, who)
+        mWhoField.set(this, tag)
     }
 
     override fun onRequestPermissionsResult(
@@ -65,7 +55,6 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
     }
 
     companion object {
-        private const val WHO_KEY = "android:who"
 
         private val mWhoField by lazy {
             android.app.Fragment::class.java
@@ -73,6 +62,22 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
                 .apply {
                     isAccessible = true
                 }
+        }
+
+        fun onCreate(activity: Activity, who: String?) {
+            val fm = activity.fragmentManager
+            var f = fm.findFragmentByTag(who)
+            if (f == null) {
+                f = ActivityResultDispatcher()
+                val t = fm.beginTransaction()
+                    .add(f, who)
+                    .hide(f)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    t.commitNow()
+                } else {
+                    t.commit()
+                }
+            }
         }
     }
 }

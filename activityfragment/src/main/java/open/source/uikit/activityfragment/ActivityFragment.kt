@@ -39,18 +39,8 @@ class ActivityFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         who = savedInstanceState?.getString(WHO_KEY) ?: "activity_fragment:" + UUID.randomUUID()
+        ActivityResultDispatcher.onCreate(requireActivity(), who)
         manager?.dispatchCreate(savedInstanceState?.getBundle(STATE_KEY))
-        val activity = requireActivity()
-        val fm = activity.fragmentManager
-        if (fm.findFragmentByTag(who) == null) {
-            val dispatcher = ActivityResultDispatcher()
-            dispatcher.who = who
-            requireActivity().fragmentManager
-                .beginTransaction()
-                .add(dispatcher, who)
-                .hide(dispatcher)
-                .commit()
-        }
         val intent = intent
         if (manager?.currentActivity?.intent
                 ?.toUri(Intent.URI_INTENT_SCHEME) != intent?.toUri(Intent.URI_INTENT_SCHEME)

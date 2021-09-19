@@ -7,17 +7,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
 import open.source.uikit.activityfragment.ActivityFragment
+import open.source.uikit.activityfragment.AndroidXCompatActivity
 import open.source.uikit.activityfragment.ShellActivity
 
 private var isT = true
 
-class MainActivity2 : AppCompatActivity() {
-
-    private val delegate by lazy {
-        ActivityFragment.getViewModelStoreOwnerDelegate(this) {
-            super.getViewModelStore()
-        }
-    }
+class MainActivity2 : AndroidXCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,12 +35,6 @@ class MainActivity2 : AppCompatActivity() {
             vm.text.value = "2222222"
         }
     }
-
-
-    override fun getViewModelStore(): ViewModelStore {
-        return delegate.viewModelStore
-    }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

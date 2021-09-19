@@ -13,21 +13,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import java.util.*
 
 class ActivityFragment : Fragment() {
     private var manager: LocalActivityManager? = null
-    internal var who: String? = null
-        private set
+    private var who: String? = null
     internal val rootActivity: Activity?
         get() {
-            var activity: Activity? = this.activity
-            while (activity != null && activity.parent != null) {
-                activity = activity.parent
-            }
-            return activity
+            return getRootActivity(activity)
         }
+
+    internal fun isInstance(check: String?): Boolean {
+        return who == check
+    }
 
     private fun requireRootActivity(): Activity {
         return rootActivity!!
@@ -123,25 +121,6 @@ class ActivityFragment : Fragment() {
     }
 
     companion object {
-
-        internal fun findTargetFragment(
-            fm: FragmentManager,
-            predicate: (ActivityFragment) -> Boolean
-        ): ActivityFragment? {
-            for (f in fm.fragments) {
-                if (f is ActivityFragment) {
-                    if (predicate(f)) {
-                        return f
-                    }
-                } else {
-                    val c = findTargetFragment(f.childFragmentManager, predicate)
-                    if (c != null) {
-                        return c
-                    }
-                }
-            }
-            return null
-        }
 
         private val onActivityResultMethod by lazy {
             Activity::class.java

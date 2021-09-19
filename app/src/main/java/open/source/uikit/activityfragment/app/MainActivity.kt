@@ -3,6 +3,8 @@ package open.source.uikit.activityfragment.app
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
+import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +17,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         if (savedInstanceState == null) {
+            val start = SystemClock.uptimeMillis()
             supportFragmentManager
                 .beginTransaction()
                 .add(R.id.xxxx1, ActivityFragment().apply {
@@ -24,6 +27,7 @@ class MainActivity : AppCompatActivity() {
                     intent = Intent(this@MainActivity, MainActivity2::class.java)
                 })
                 .commitNow()
+            Log.d(TAG, "onCreate: " + (SystemClock.uptimeMillis() - start))
         }
         val tv = findViewById<TextView>(R.id.xxxxxxxx)
         val vm = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)[Vm::class.java]
@@ -40,9 +44,9 @@ class MainActivity : AppCompatActivity() {
         super.startActivityFromChild(child, intent, requestCode)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 
+    companion object {
+        private const val TAG = "MainActivity"
+    }
 
 }

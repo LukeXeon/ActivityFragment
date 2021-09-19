@@ -10,8 +10,12 @@ open class AndroidXCompatActivity : AppCompatActivity() {
     private val androidXCompatDelegate by lazy {
         AndroidXCompatDelegate.create(
             this,
-            { super.getViewModelStore() },
-            { super.isChangingConfigurations() }
+            object : AndroidXCompatDelegate.HostProperties {
+                override val viewModelStore: ViewModelStore
+                    get() = super@AndroidXCompatActivity.getViewModelStore()
+                override val isChangingConfigurations: Boolean
+                    get() = super@AndroidXCompatActivity.isChangingConfigurations()
+            }
         )
     }
 

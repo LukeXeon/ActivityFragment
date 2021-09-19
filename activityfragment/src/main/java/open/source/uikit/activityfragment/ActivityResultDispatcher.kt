@@ -23,9 +23,9 @@ internal class ActivityResultDispatcher : Fragment() {
     private fun findTargetFragment(): ActivityFragment? {
         var t = target?.get()
         if (t == null) {
-            t = ActivityFragment.findTargetFragment(
+            t = findTargetFragment(
                 (activity as FragmentActivity).supportFragmentManager
-            ) { it.who == tag }
+            ) { it.isInstance(tag) }
             if (t != null) {
                 target = WeakReference(t)
             }

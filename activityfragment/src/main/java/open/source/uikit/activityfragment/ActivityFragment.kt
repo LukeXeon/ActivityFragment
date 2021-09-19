@@ -148,7 +148,7 @@ class ActivityFragment : Fragment() {
         internal fun findTargetFragment(
             fm: FragmentManager,
             predicate: (ActivityFragment) -> Boolean
-        ): Fragment? {
+        ): ActivityFragment? {
             for (f in fm.fragments) {
                 if (f is ActivityFragment) {
                     if (predicate(f)) {

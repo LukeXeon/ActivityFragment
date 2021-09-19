@@ -3,23 +3,34 @@
 package open.source.uikit.activityfragment
 
 import android.app.Activity
+import android.app.Fragment
 import android.content.Intent
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.RestrictTo
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import java.lang.ref.WeakReference
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-internal class ActivityResultDispatcher : android.app.Fragment() {
+internal class ActivityResultDispatcher : Fragment() {
 
     init {
         retainInstance = true
     }
 
-    private fun findTargetFragment(): Fragment? {
-        return ActivityFragment.findTargetFragment(
-            (activity as FragmentActivity).supportFragmentManager
-        ) { it.who == tag }
+    private var target: WeakReference<ActivityFragment>? = null
+
+    private fun findTargetFragment(): ActivityFragment? {
+        var t = target?.get()
+        if (t == null) {
+            t = ActivityFragment.findTargetFragment(
+                (activity as FragmentActivity).supportFragmentManager
+            ) { it.who == tag }
+            if (t != null) {
+                target = WeakReference(t)
+            }
+        }
+        return t
     }
 
     override fun onAttach(activity: Activity?) {
@@ -27,6 +38,12 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
         mWhoField.set(this, tag)
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        target = null
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -46,7 +63,7 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
     companion object {
 
         private val mWhoField by lazy {
-            android.app.Fragment::class.java
+            Fragment::class.java
                 .getDeclaredField("mWho")
                 .apply {
                     isAccessible = true

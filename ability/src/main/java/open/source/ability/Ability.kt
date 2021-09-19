@@ -46,9 +46,9 @@ class Ability : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        who = savedInstanceState?.getString(WHO_KEY) ?: "ability:" + UUID.randomUUID()
+        who = savedInstanceState?.getString(ABILITY_WHO) ?: "ability:" + UUID.randomUUID()
         AbilityShadowFragment.dispatchCreate(requireRootActivity(), who)
-        manager?.dispatchCreate(savedInstanceState?.getBundle(STATE_KEY))
+        manager?.dispatchCreate(savedInstanceState?.getBundle(ABILITY_STATE))
         val intent = intent
         if (manager?.currentActivity?.intent?.component != intent?.component) {
             manager?.removeAllActivities()
@@ -68,8 +68,8 @@ class Ability : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBundle(STATE_KEY, manager?.saveInstanceState())
-        outState.putString(WHO_KEY, who)
+        outState.putBundle(ABILITY_STATE, manager?.saveInstanceState())
+        outState.putString(ABILITY_WHO, who)
     }
 
     override fun onResume() {
@@ -114,30 +114,12 @@ class Ability : Fragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        manager?.currentActivity?.let {
-            onActivityResultMethod.invoke(
-                it,
-                requestCode,
-                resultCode,
-                data
-            )
-        }
+        manager?.currentActivity?.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {
-        private val onActivityResultMethod by lazy {
-            Activity::class.java
-                .getDeclaredMethod(
-                    "onActivityResult",
-                    Int::class.javaPrimitiveType,
-                    Int::class.javaPrimitiveType,
-                    Intent::class.java
-                ).apply {
-                    isAccessible = true
-                }
-        }
         const val ABILITY_INTENT = "ability:intent"
-        private const val WHO_KEY = "ability:who"
-        private const val STATE_KEY = "ability:state"
+        private const val ABILITY_WHO = "ability:who"
+        private const val ABILITY_STATE = "ability:state"
     }
 }

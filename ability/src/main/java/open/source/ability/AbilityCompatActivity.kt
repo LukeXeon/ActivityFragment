@@ -3,7 +3,6 @@ package open.source.ability
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelStore
 
-
 open class AbilityCompatActivity : AppCompatActivity() {
 
     @Suppress("LeakingThis")

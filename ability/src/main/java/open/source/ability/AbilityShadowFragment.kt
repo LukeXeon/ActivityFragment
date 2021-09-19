@@ -35,7 +35,7 @@ internal class AbilityShadowFragment : Fragment() {
 
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
-        mWhoField.set(this, tag)
+        who = tag
     }
 
     override fun onDetach() {
@@ -69,14 +69,6 @@ internal class AbilityShadowFragment : Fragment() {
     }
 
     companion object {
-
-        private val mWhoField by lazy {
-            Fragment::class.java
-                .getDeclaredField("mWho")
-                .apply {
-                    isAccessible = true
-                }
-        }
 
         fun dispatchCreate(activity: Activity, who: String?) {
             val fm = activity.fragmentManager

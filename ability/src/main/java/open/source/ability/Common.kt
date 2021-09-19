@@ -1,6 +1,8 @@
 package open.source.ability
 
 import android.app.Activity
+import android.app.Fragment
+import android.content.Intent
 import androidx.fragment.app.FragmentManager
 
 internal fun findTargetAbility(
@@ -29,3 +31,48 @@ internal fun getRootActivity(activity: Activity?): Activity? {
     }
     return act
 }
+
+private val onActivityResultMethod by lazy {
+    Activity::class.java
+        .getDeclaredMethod(
+            "onActivityResult",
+            Int::class.javaPrimitiveType,
+            Int::class.javaPrimitiveType,
+            Intent::class.java
+        ).apply {
+            isAccessible = true
+        }
+}
+
+internal fun Activity.onActivityResult(
+    requestCode: Int,
+    resultCode: Int,
+    data: Intent?
+) {
+    onActivityResultMethod.invoke(this, requestCode, resultCode, data)
+}
+
+private val mWhoField by lazy {
+    Fragment::class.java
+        .getDeclaredField("mWho")
+        .apply {
+            isAccessible = true
+        }
+}
+
+internal var Fragment.who: String?
+    get() = mWhoField.get(this) as? String
+    set(value) {
+        mWhoField.set(this, value)
+    }
+
+private val mEmbeddedIDField by lazy {
+    Activity::class.java
+        .getDeclaredField("mEmbeddedID")
+        .apply {
+            isAccessible = true
+        }
+}
+
+internal val Activity.embeddedID: String?
+    get() = mEmbeddedIDField.get(this) as? String

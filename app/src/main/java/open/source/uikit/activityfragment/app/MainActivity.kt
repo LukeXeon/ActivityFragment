@@ -1,10 +1,14 @@
 package open.source.uikit.activityfragment.app
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import open.source.uikit.activityfragment.ActivityFragment
+
+private var isT = true
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,5 +25,24 @@ class MainActivity : AppCompatActivity() {
                 })
                 .commitNow()
         }
+        val tv = findViewById<TextView>(R.id.xxxxxxxx)
+        val vm = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)[Vm::class.java]
+        vm.text.observe(this) {
+            tv.text = it
+        }
+        if (isT) {
+            isT = false
+            vm.text.value = "111111"
+        }
     }
+
+    override fun startActivityFromChild(child: Activity, intent: Intent?, requestCode: Int) {
+        super.startActivityFromChild(child, intent, requestCode)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+
 }

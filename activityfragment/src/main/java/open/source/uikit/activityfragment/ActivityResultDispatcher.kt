@@ -8,7 +8,6 @@ import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class ActivityResultDispatcher : android.app.Fragment() {
@@ -17,24 +16,10 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
         retainInstance = true
     }
 
-    private fun findTargetFragment(
-        fm: FragmentManager = (activity as FragmentActivity)
-            .supportFragmentManager,
-        who: String? = tag
-    ): Fragment? {
-        for (f in fm.fragments) {
-            if (f is ActivityFragment) {
-                if (f.who == who) {
-                    return f
-                }
-            } else {
-                val c = findTargetFragment(f.childFragmentManager, who)
-                if (c != null) {
-                    return c
-                }
-            }
-        }
-        return null
+    private fun findTargetFragment(): Fragment? {
+        return ActivityFragment.findTargetFragment(
+            (activity as FragmentActivity).supportFragmentManager
+        ) { it.who == tag }
     }
 
     override fun onAttach(activity: Activity?) {
@@ -68,7 +53,7 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
                 }
         }
 
-        fun onCreate(activity: Activity, who: String?) {
+        fun dispatchCreate(activity: Activity, who: String?) {
             val fm = activity.fragmentManager
             var f = fm.findFragmentByTag(who)
             if (f == null && !fm.isDestroyed) {
@@ -85,7 +70,7 @@ internal class ActivityResultDispatcher : android.app.Fragment() {
             }
         }
 
-        fun onDestroy(activity: Activity, who: String?) {
+        fun dispatchDestroy(activity: Activity, who: String?) {
             val fm = activity.fragmentManager
             val f = fm.findFragmentByTag(who)
             if (f != null && !fm.isDestroyed) {

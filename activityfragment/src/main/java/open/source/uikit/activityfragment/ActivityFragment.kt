@@ -14,8 +14,11 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import java.util.*
 
 class ActivityFragment : Fragment() {
@@ -39,17 +42,12 @@ class ActivityFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         who = savedInstanceState?.getString(WHO_KEY) ?: "activity_fragment:" + UUID.randomUUID()
-        ActivityResultDispatcher.onCreate(requireActivity(), who)
+        ActivityResultDispatcher.dispatchCreate(requireActivity(), who)
         manager?.dispatchCreate(savedInstanceState?.getBundle(STATE_KEY))
         val intent = intent
-        if (manager?.currentActivity?.intent
-                ?.toUri(Intent.URI_INTENT_SCHEME) != intent?.toUri(Intent.URI_INTENT_SCHEME)
-        ) {
+        if (manager?.currentActivity?.intent?.component != intent?.component) {
             manager?.removeAllActivities()
-            manager?.startActivity(
-                who,
-                WrapIntent(intent)
-            )
+            manager?.startActivity(who, WrapIntent(intent))
         }
     }
 
@@ -87,7 +85,7 @@ class ActivityFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         val activity = requireActivity()
-        ActivityResultDispatcher.onDestroy(activity, who)
+        ActivityResultDispatcher.dispatchDestroy(activity, who)
         manager?.dispatchDestroy(activity.isFinishing)
     }
 
@@ -120,15 +118,58 @@ class ActivityFragment : Fragment() {
     companion object {
 
         @JvmStatic
-        fun getViewModelStore(activity: ComponentActivity): ViewModelStore? {
-            if (activity.parent == null) {
-                return activity.viewModelStore
+        fun getViewModelStoreOwnerDelegate(
+            activity: ComponentActivity,
+            original: () -> ViewModelStore
+        ): ViewModelStoreOwner {
+            var owner: ViewModelStoreOwner? = null
+            val parent = activity.parent as? FragmentActivity
+            if (parent != null) {
+                val who = mEmbeddedIDField.get(activity) as String
+                val fragment = findTargetFragment(parent.supportFragmentManager) {
+                    it.who == who
+                }
+                if (fragment != null) {
+                    owner = ViewModelStoreOwner {
+                        if (activity.lifecycle.currentState == Lifecycle.State.DESTROYED && parent.isChangingConfigurations) {
+                            ViewModelStore()
+                        } else {
+                            fragment.viewModelStore
+                        }
+                    }
+                }
             }
-            return runCatching {
-                FragmentManager.findFragment<ActivityFragment>(
-                    activity.window.decorView
-                )
-            }.getOrNull()?.viewModelStore
+            if (owner == null) {
+                owner = ViewModelStoreOwner { original() }
+            }
+            return owner
+        }
+
+        internal fun findTargetFragment(
+            fm: FragmentManager,
+            predicate: (ActivityFragment) -> Boolean
+        ): Fragment? {
+            for (f in fm.fragments) {
+                if (f is ActivityFragment) {
+                    if (predicate(f)) {
+                        return f
+                    }
+                } else {
+                    val c = findTargetFragment(f.childFragmentManager, predicate)
+                    if (c != null) {
+                        return c
+                    }
+                }
+            }
+            return null
+        }
+
+        private val mEmbeddedIDField by lazy {
+            Activity::class.java
+                .getDeclaredField("mEmbeddedID")
+                .apply {
+                    isAccessible = true
+                }
         }
 
         private val onActivityResultMethod by lazy {

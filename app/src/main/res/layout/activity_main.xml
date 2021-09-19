@@ -13,6 +13,10 @@
             android:minHeight="1000dp"
             android:layout_width="match_parent"
             android:layout_height="1000dp">
+            <TextView
+                android:id="@+id/xxxxxxxx"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
             <FrameLayout
                 android:id="@+id/xxxx1"
                 android:layout_weight="1"

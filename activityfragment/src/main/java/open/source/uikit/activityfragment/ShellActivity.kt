@@ -5,8 +5,15 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.ViewModelStore
 
 class ShellActivity : AppCompatActivity() {
+
+    private val viewModelStoreOwnerDelegate by lazy {
+        ActivityFragment.getViewModelStoreOwnerDelegate(this) {
+            super.getViewModelStore()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +33,10 @@ class ShellActivity : AppCompatActivity() {
                 .add(CONTENT_ID, f)
                 .commitNow()
         }
+    }
+
+    override fun getViewModelStore(): ViewModelStore {
+        return viewModelStoreOwnerDelegate.viewModelStore
     }
 
     companion object {

@@ -19,6 +19,7 @@ import java.util.*
 class ActivityFragment : Fragment() {
     private var manager: LocalActivityManager? = null
     internal var who: String? = null
+        private set
     internal val rootActivity: Activity?
         get() {
             var activity: Activity? = this.activity

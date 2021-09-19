@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 
-class AbilityShellActivity : AndroidXCompatActivity() {
+class AbilityShellActivity : AbilityCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

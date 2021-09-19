@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.*
-import open.source.ability.AndroidXCompatActivity
+import open.source.ability.AbilityCompatActivity
 import open.source.ability.AbilityShellActivity
 
 private var isT = true
 
-class MainActivity2 : AndroidXCompatActivity() {
+class MainActivity2 : AbilityCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

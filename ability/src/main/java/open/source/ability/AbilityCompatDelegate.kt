@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelStore
 
-object AndroidXCompatDelegate {
+object AbilityCompatDelegate {
 
     interface HostProperties {
         val viewModelStore: ViewModelStore

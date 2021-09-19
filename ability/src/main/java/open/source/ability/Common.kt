@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Fragment
 import android.content.Intent
 import androidx.fragment.app.FragmentManager
+import java.lang.reflect.InvocationTargetException
 
 internal fun findTargetAbility(
     fm: FragmentManager,
@@ -49,7 +50,11 @@ internal fun Activity.onActivityResult(
     resultCode: Int,
     data: Intent?
 ) {
-    onActivityResultMethod.invoke(this, requestCode, resultCode, data)
+    try {
+        onActivityResultMethod.invoke(this, requestCode, resultCode, data)
+    } catch (e: InvocationTargetException) {
+        throw e.targetException
+    }
 }
 
 private val mWhoField by lazy {

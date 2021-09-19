@@ -19,7 +19,7 @@ class AbilityShellActivity : AbilityCompatActivity() {
         setContentView(content)
         if (savedInstanceState == null) {
             val f = Ability()
-            f.intent = intent.getParcelableExtra(ABILITY_INTENT)
+            f.intent = intent.getParcelableExtra(Ability.ABILITY_INTENT)
             supportFragmentManager
                 .beginTransaction()
                 .add(CONTENT_ID, f)
@@ -28,8 +28,6 @@ class AbilityShellActivity : AbilityCompatActivity() {
     }
 
     companion object {
-        const val ABILITY_INTENT = "ability:intent"
-
         private val CONTENT_ID = ViewCompat.generateViewId()
     }
 }

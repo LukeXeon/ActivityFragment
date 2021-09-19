@@ -32,10 +32,10 @@ class Ability : Fragment() {
     }
 
     var intent: Intent?
-        get() = arguments?.getParcelable(AbilityShellActivity.ABILITY_INTENT)
+        get() = arguments?.getParcelable(ABILITY_INTENT)
         set(value) {
             val args = arguments ?: Bundle()
-            args.putParcelable(AbilityShellActivity.ABILITY_INTENT, value)
+            args.putParcelable(ABILITY_INTENT, value)
             arguments = args
         }
 
@@ -136,6 +136,7 @@ class Ability : Fragment() {
                     isAccessible = true
                 }
         }
+        const val ABILITY_INTENT = "ability:intent"
         private const val WHO_KEY = "ability:who"
         private const val STATE_KEY = "ability:state"
     }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.*
+import open.source.ability.Ability
 import open.source.ability.AbilityCompatActivity
 import open.source.ability.AbilityShellActivity
 
@@ -20,7 +21,7 @@ class MainActivity2 : AbilityCompatActivity() {
         tv.setOnClickListener {
             startActivityForResult(Intent(this, AbilityShellActivity::class.java).apply {
                 putExtra(
-                    AbilityShellActivity.ABILITY_INTENT,
+                    Ability.ABILITY_INTENT,
                     Intent(this@MainActivity2, MainActivity2::class.java)
                 )
             }, 1000)

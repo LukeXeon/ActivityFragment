@@ -137,9 +137,8 @@ class Ability : Fragment() {
                     if (launchTaskId == -1) {
                         val am = context.getSystemService(Context.ACTIVITY_SERVICE)
                                 as ActivityManager
-                        val tasks = am.getRunningTasks(1)
-                        if (!tasks.isNullOrEmpty()) {
-                            val task = tasks.first()
+                        val task = am.getRunningTasks(1).firstOrNull()
+                        if (task != null) {
                             if (task.topActivity?.packageName == context.applicationInfo.packageName) {
                                 options.putInt("android.activity.launchTaskId", task.id)
                                 addFlags = false

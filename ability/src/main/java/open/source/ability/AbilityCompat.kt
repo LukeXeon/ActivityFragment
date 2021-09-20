@@ -155,7 +155,7 @@ fun getAbilityCompatDelegate(
         var ability: Ability? = null
         if (who != null) {
             ability = findTargetAbility(root.supportFragmentManager) {
-                it.isInstance(who)
+                it.who == who
             }
         }
         if (ability != null) {

@@ -25,7 +25,7 @@ internal class AbilityShadowFragment : Fragment() {
         if (t == null) {
             t = findTargetAbility(
                 (activity as FragmentActivity).supportFragmentManager
-            ) { it.isInstance(tag) }
+            ) { it.who == tag }
             if (t != null) {
                 target = WeakReference(t)
             }

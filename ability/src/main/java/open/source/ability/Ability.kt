@@ -20,7 +20,8 @@ import java.util.*
 
 class Ability : Fragment() {
     private var manager: LocalActivityManager? = null
-    private var who: String? = null
+    internal var who: String? = null
+        private set
     internal val rootActivity: Activity?
         get() {
             return getRootActivity(activity)
@@ -28,14 +29,9 @@ class Ability : Fragment() {
     internal val currentActivity: Activity?
         get() = manager?.currentActivity
 
-    internal fun isInstance(check: String?): Boolean {
-        return who == check
-    }
-
     private fun requireRootActivity(): Activity {
         return rootActivity!!
     }
-
 
     var intent: Intent?
         get() = arguments?.getParcelable(ABILITY_INTENT)

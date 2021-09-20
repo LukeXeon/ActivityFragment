@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModelStore
 open class AbilityCompatActivity : AppCompatActivity() {
 
     private val abilityCompatDelegate by lazy {
-        AbilityCompat.getDelegate(
+        getAbilityCompatDelegate(
             this,
-            object : AbilityCompat.Delegate {
+            object : AbilityCompatDelegate {
                 override val viewModelStore: ViewModelStore
                     get() = super@AbilityCompatActivity.getViewModelStore()
                 override val isChangingConfigurations: Boolean

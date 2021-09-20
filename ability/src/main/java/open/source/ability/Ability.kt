@@ -123,48 +123,6 @@ class Ability : Fragment() {
     }
 
     companion object {
-        @JvmStatic
-        @JvmOverloads
-        fun startActivityAsAbility(
-            context: Context,
-            intent: Intent,
-            options: Bundle? = null,
-            requestCode: Int = -1
-        ) {
-            val shell = Intent(context, AbilityShellActivity::class.java)
-            var addFlags = false
-            if (context is Application) {
-                addFlags = true
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M && options != null) {
-                    val launchTaskId = options.getInt("android.activity.launchTaskId", -1)
-                    if (launchTaskId == -1) {
-                        val am = context.getSystemService(Context.ACTIVITY_SERVICE)
-                                as ActivityManager
-                        val task = am.getRunningTasks(1).firstOrNull()
-                        if (task != null) {
-                            if (task.topActivity?.packageName == context.applicationInfo.packageName) {
-                                options.putInt("android.activity.launchTaskId", task.id)
-                                addFlags = false
-                            }
-                        }
-                    }
-                }
-            }
-            if (addFlags) {
-                shell.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            shell.putExtra(ABILITY_INTENT, intent)
-            if (requestCode < 0 || context !is Activity) {
-                context.startActivity(shell, options)
-            } else {
-                context.startActivityForResult(shell, requestCode, options)
-            }
-        }
-
-        init {
-            ActivityCompat.setPermissionCompatDelegate(AbilityCompat.RequestPermissionDelegate)
-        }
-
         internal const val ABILITY_INTENT = "ability:intent"
         private const val ABILITY_WHO = "ability:who"
         private const val ABILITY_STATE = "ability:state"

@@ -31,12 +31,6 @@ class MainActivity : AppCompatActivity() {
                 .commitNow()
             Log.d(TAG, "onCreate: " + (SystemClock.uptimeMillis() - start))
         }
-        ActivityCompat.requestPermissions(
-            this, arrayOf(
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.CALL_PHONE
-            ), 1000
-        )
         val tv = findViewById<TextView>(R.id.xxxxxxxx)
         val vm = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)[Vm::class.java]
         vm.text.observe(this) {

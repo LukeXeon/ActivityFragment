@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.lifecycle.*
 import open.source.ability.Ability
 import open.source.ability.AbilityCompatActivity
-import open.source.ability.AbilityShellActivity
 
 private var isT = true
 
@@ -19,12 +18,10 @@ class MainActivity2 : AbilityCompatActivity() {
         val vm = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)[Vm::class.java]
         val tv = findViewById<TextView>(R.id.text)
         tv.setOnClickListener {
-            startActivityForResult(Intent(this, AbilityShellActivity::class.java).apply {
-                putExtra(
-                    Ability.ABILITY_INTENT,
-                    Intent(this@MainActivity2, MainActivity2::class.java)
-                )
-            }, 1000)
+            Ability.startActivityAsAbility(
+                this,
+                Intent(this@MainActivity2, MainActivity2::class.java)
+            )
         }
         vm.text.observe(this) {
             tv.text = it

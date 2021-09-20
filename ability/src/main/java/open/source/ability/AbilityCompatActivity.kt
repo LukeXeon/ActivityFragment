@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelStore
 
 open class AbilityCompatActivity : AppCompatActivity() {
 
-    @Suppress("LeakingThis")
     private val abilityCompatDelegate by lazy {
         AbilityCompatDelegate.create(
             this,

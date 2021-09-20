@@ -2,32 +2,43 @@ package open.source.ability
 
 import android.os.Bundle
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.core.view.ViewCompat
+import androidx.annotation.RestrictTo
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelStore
 
-class AbilityShellActivity : AbilityCompatActivity() {
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+internal class AbilityShellActivity : FragmentActivity() {
+
+    private val abilityCompatDelegate by lazy {
+        AbilityCompatDelegate.create(
+            this,
+            object : AbilityCompatDelegate.HostProperties {
+                override val viewModelStore: ViewModelStore
+                    get() = super@AbilityShellActivity.getViewModelStore()
+                override val isChangingConfigurations: Boolean
+                    get() = super@AbilityShellActivity.isChangingConfigurations()
+            }
+        )
+    }
+
+    override fun isChangingConfigurations(): Boolean {
+        return abilityCompatDelegate.isChangingConfigurations
+    }
+
+    override fun getViewModelStore(): ViewModelStore {
+        return abilityCompatDelegate.viewModelStore
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.hide()
-        val content = FrameLayout(this)
-        content.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        content.id = CONTENT_ID
-        setContentView(content)
+        findViewById<ViewGroup>(android.R.id.content).removeAllViews()
         if (savedInstanceState == null) {
             val f = Ability()
             f.intent = intent.getParcelableExtra(Ability.ABILITY_INTENT)
             supportFragmentManager
                 .beginTransaction()
-                .add(CONTENT_ID, f)
+                .add(android.R.id.content, f)
                 .commitNow()
         }
-    }
-
-    companion object {
-        private val CONTENT_ID = ViewCompat.generateViewId()
     }
 }

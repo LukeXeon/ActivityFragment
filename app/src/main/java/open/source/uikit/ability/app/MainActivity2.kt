@@ -20,7 +20,7 @@ class MainActivity2 : AbilityCompatActivity() {
         tv.setOnClickListener {
             Ability.startActivityAsAbility(
                 this,
-                Intent(this@MainActivity2, MainActivity2::class.java),
+                Intent(this@MainActivity2, MainActivity3::class.java),
                 requestCode = 1000
             )
         }

@@ -22,15 +22,19 @@ internal class WrapIntent : Intent {
         pm: PackageManager,
         flags: Int
     ): ActivityInfo {
-        val componentName = requireNotNull(component)
-        return Intent().apply {
-            component = ComponentName(
-                componentName.packageName,
-                AbilityShellActivity::class.java.name
-            )
-        }.resolveActivityInfo(pm, flags).apply {
-            name = componentName.className
+        var info = super.resolveActivityInfo(pm, flags)
+        if (info == null) {
+            val componentName = requireNotNull(component)
+            info = Intent().apply {
+                component = ComponentName(
+                    componentName.packageName,
+                    AbilityShellActivity::class.java.name
+                )
+            }.resolveActivityInfo(pm, flags).apply {
+                name = componentName.className
+            }
         }
+        return info
     }
 
     companion object CREATOR : Parcelable.Creator<WrapIntent> {

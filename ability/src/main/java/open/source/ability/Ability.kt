@@ -24,6 +24,8 @@ class Ability : Fragment() {
         get() {
             return getRootActivity(activity)
         }
+    internal val currentActivity: Activity?
+        get() = manager?.currentActivity
 
     internal fun isInstance(check: String?): Boolean {
         return who == check
@@ -32,6 +34,7 @@ class Ability : Fragment() {
     private fun requireRootActivity(): Activity {
         return rootActivity!!
     }
+
 
     var intent: Intent?
         get() = arguments?.getParcelable(ABILITY_INTENT)
@@ -49,10 +52,11 @@ class Ability : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         who = savedInstanceState?.getString(ABILITY_WHO) ?: "ability:" + UUID.randomUUID()
-        AbilityShadowFragment.dispatchCreate(requireRootActivity(), who)
+        val activity = requireRootActivity()
+        AbilityShadowFragment.dispatchCreate(activity, who)
         manager?.dispatchCreate(savedInstanceState?.getBundle(ABILITY_STATE))
         val intent = intent
-        if (manager?.currentActivity?.intent?.component != intent?.component) {
+        if (intent != null && manager?.currentActivity?.intent?.component != intent.component) {
             manager?.removeAllActivities()
             manager?.startActivity(who, WrapIntent(intent))
         }

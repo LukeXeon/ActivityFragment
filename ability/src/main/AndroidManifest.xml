@@ -4,6 +4,7 @@
 
     <application>
         <activity
-            android:name=".AbilityShellActivity" />
+            android:name=".AbilityShellActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"/>
     </application>
 </manifest>

@@ -40,6 +40,7 @@ internal class AbilityShellActivity : AbilityCompatActivity(),
             if (w != null && window.statusBarColor != w.statusBarColor) {
                 window.statusBarColor = w.statusBarColor
             }
+            ability = f
         }
         return true
     }

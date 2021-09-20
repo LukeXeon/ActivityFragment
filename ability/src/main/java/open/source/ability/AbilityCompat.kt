@@ -1,7 +1,12 @@
 package open.source.ability
 
+import android.app.Activity
+import android.content.Intent
 import android.content.res.Resources
+import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.annotation.IntRange
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelStore
 
@@ -11,6 +16,33 @@ object AbilityCompat {
         val viewModelStore: ViewModelStore
         val isChangingConfigurations: Boolean
         fun onApplyThemeResource(theme: Resources.Theme?, resid: Int, first: Boolean)
+    }
+
+    object RequestPermissionDelegate : ActivityCompat.PermissionCompatDelegate {
+        override fun requestPermissions(
+            activity: Activity,
+            permissions: Array<String?>,
+            requestCode: Int
+        ): Boolean {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val root = getRootActivity(activity) ?: return false
+                val who = activity.embeddedID
+                val shadow = root.fragmentManager.findFragmentByTag(who) ?: return false
+                @Suppress("DEPRECATION")
+                shadow.requestPermissions(permissions, requestCode)
+                return true
+            }
+            return false
+        }
+
+        override fun onActivityResult(
+            activity: Activity,
+            requestCode: Int,
+            resultCode: Int,
+            data: Intent?
+        ): Boolean {
+            return false
+        }
     }
 
     private class AbilityDelegate(
@@ -25,6 +57,19 @@ object AbilityCompat {
 
         override fun onApplyThemeResource(theme: Resources.Theme?, resid: Int, first: Boolean) {
             theme?.applyStyle(resid, true)
+        }
+    }
+
+    @JvmStatic
+    fun requestPermissions(
+        activity: Activity,
+        permissions: Array<String?>,
+        @IntRange(from = 0) requestCode: Int
+    ) {
+        if (activity.parent == null) {
+            ActivityCompat.requestPermissions(activity, permissions, requestCode)
+        } else {
+            RequestPermissionDelegate.requestPermissions(activity, permissions, requestCode)
         }
     }
 

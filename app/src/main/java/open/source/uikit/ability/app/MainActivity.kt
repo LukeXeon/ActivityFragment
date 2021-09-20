@@ -1,5 +1,6 @@
 package open.source.uikit.ability.app
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.os.SystemClock
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import open.source.ability.Ability
 
@@ -29,6 +31,12 @@ class MainActivity : AppCompatActivity() {
                 .commitNow()
             Log.d(TAG, "onCreate: " + (SystemClock.uptimeMillis() - start))
         }
+        ActivityCompat.requestPermissions(
+            this, arrayOf(
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.CALL_PHONE
+            ), 1000
+        )
         val tv = findViewById<TextView>(R.id.xxxxxxxx)
         val vm = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)[Vm::class.java]
         vm.text.observe(this) {

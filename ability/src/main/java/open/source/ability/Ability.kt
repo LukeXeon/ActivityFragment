@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import java.util.*
 
@@ -52,7 +53,6 @@ class Ability : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         who = savedInstanceState?.getString(ABILITY_WHO) ?: "ability:" + UUID.randomUUID()
-        val activity = requireRootActivity()
         AbilityShadowFragment.dispatchCreate(activity, who)
         manager?.dispatchCreate(savedInstanceState?.getBundle(ABILITY_STATE))
         val intent = intent
@@ -95,9 +95,8 @@ class Ability : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        val activity = requireRootActivity()
         AbilityShadowFragment.dispatchDestroy(activity, who)
-        manager?.dispatchDestroy(activity.isFinishing)
+        manager?.dispatchDestroy(requireRootActivity().isFinishing)
     }
 
     override fun onDetach() {
@@ -160,6 +159,10 @@ class Ability : Fragment() {
             } else {
                 context.startActivityForResult(shell, requestCode, options)
             }
+        }
+
+        init {
+            ActivityCompat.setPermissionCompatDelegate(AbilityCompat.RequestPermissionDelegate)
         }
 
         internal const val ABILITY_INTENT = "ability:intent"

@@ -4,16 +4,16 @@ import androidx.activity.ComponentActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelStore
 
-object AbilityCompatDelegate {
+object AbilityCompat {
 
-    interface HostProperties {
+    interface DelegateProperties {
         val viewModelStore: ViewModelStore
         val isChangingConfigurations: Boolean
     }
 
     private class AbilityDelegate(
         private val ability: Ability
-    ) : HostProperties {
+    ) : DelegateProperties {
 
         override val viewModelStore: ViewModelStore
             get() = ability.viewModelStore
@@ -23,11 +23,11 @@ object AbilityCompatDelegate {
     }
 
     @JvmStatic
-    fun create(
+    fun getDelegate(
         activity: ComponentActivity,
-        default: HostProperties
-    ): HostProperties {
-        var delegate: HostProperties? = null
+        default: DelegateProperties
+    ): DelegateProperties {
+        var delegate: DelegateProperties? = null
         val parent = getRootActivity(activity.parent) as? FragmentActivity
         if (parent != null) {
             val who = activity.embeddedID

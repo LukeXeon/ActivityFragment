@@ -10,9 +10,9 @@ import androidx.lifecycle.ViewModelStore
 internal class AbilityShellActivity : FragmentActivity() {
 
     private val abilityCompatDelegate by lazy {
-        AbilityCompatDelegate.create(
+        AbilityCompat.getDelegate(
             this,
-            object : AbilityCompatDelegate.HostProperties {
+            object : AbilityCompat.DelegateProperties {
                 override val viewModelStore: ViewModelStore
                     get() = super@AbilityShellActivity.getViewModelStore()
                 override val isChangingConfigurations: Boolean

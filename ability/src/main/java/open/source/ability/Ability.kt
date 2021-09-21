@@ -49,10 +49,7 @@ class Ability : Fragment() {
         AbilityShadowFragment.dispatchCreate(activity, who)
         manager?.dispatchCreate(savedInstanceState?.getBundle(ABILITY_STATE))
         val intent = intent
-        if (intent != null && !intent.filterEquals(manager?.currentActivity?.intent)) {
-            manager?.removeAllActivities()
-            manager?.startActivity(who, WrapIntent(intent))
-        }
+        manager?.startActivity(who, WrapIntent(intent))
     }
 
     override fun onCreateView(

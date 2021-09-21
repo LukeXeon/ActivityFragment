@@ -10,10 +10,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.annotation.IntRange
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import java.lang.reflect.InvocationTargetException
 
@@ -143,29 +141,4 @@ fun requestPermissions(
     } else {
         RequestPermissionDelegate.requestPermissions(activity, permissions, requestCode)
     }
-}
-
-fun getAbilityCompatDelegate(
-    activity: ComponentActivity,
-    default: AbilityCompatDelegate
-): AbilityCompatDelegate {
-    var delegate: AbilityCompatDelegate? = null
-    val root = activity.rootActivity as? FragmentActivity
-    if (root != null) {
-        val who = activity.embeddedID
-        var ability: Ability? = null
-        if (who != null) {
-            ability = findTargetAbility(root.supportFragmentManager) {
-                it.who == who
-            }
-        }
-        if (ability != null) {
-            delegate = AbilityCompatDelegateImpl(ability)
-        }
-
-    }
-    if (delegate == null) {
-        delegate = default
-    }
-    return delegate
 }

@@ -19,15 +19,11 @@ class Ability : Fragment() {
     private var manager: LocalActivityManager? = null
     internal var who: String? = null
         private set
-    internal val rootActivity: Activity?
-        get() {
-            return activity.rootActivity
-        }
     internal val currentActivity: Activity?
         get() = manager?.currentActivity
 
     private fun requireRootActivity(): Activity {
-        return rootActivity!!
+        return requireNotNull(activity.rootActivity)
     }
 
     var intent: Intent?

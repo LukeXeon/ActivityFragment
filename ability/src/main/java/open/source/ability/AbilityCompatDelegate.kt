@@ -1,10 +1,27 @@
 package open.source.ability
 
 import android.content.res.Resources
+import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelStore
 
-interface AbilityCompatDelegate {
-    val viewModelStore: ViewModelStore
-    val isChangingConfigurations: Boolean
-    fun onApplyThemeResource(theme: Resources.Theme?, resid: Int, first: Boolean)
+abstract class AbilityCompatDelegate {
+    abstract fun getViewModelStore(): ViewModelStore
+    abstract fun isChangingConfigurations(): Boolean
+    abstract fun onApplyThemeResource(theme: Resources.Theme, resId: Int, first: Boolean)
+
+    interface Fallback {
+        fun superGetViewModelStore(): ViewModelStore
+        fun superIsChangingConfigurations(): Boolean
+        fun superOnApplyThemeResource(theme: Resources.Theme, resId: Int, first: Boolean)
+    }
+
+    companion object {
+        @JvmStatic
+        fun <T> create(
+            activity: T
+        ): AbilityCompatDelegate where T : ComponentActivity, T : Fallback {
+            return AbilityCompatDelegateImpl(activity)
+        }
+    }
 }

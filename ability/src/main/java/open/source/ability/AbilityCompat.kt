@@ -81,12 +81,15 @@ fun Context.startActivityAsAbility(
         shell.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
     shell.putExtra(Ability.ABILITY_INTENT, intent)
-    ActivityCompat.setPermissionCompatDelegate(RequestPermissionDelegate)
     if (requestCode < 0 || this !is Activity) {
         this.startActivity(shell, options)
     } else {
         this.startActivityForResult(shell, requestCode, options)
     }
+}
+
+fun useActivityCompatRequestPermissionsDelegate() {
+    ActivityCompat.setPermissionCompatDelegate(RequestPermissionDelegate)
 }
 
 fun requestPermissions(

@@ -7,11 +7,9 @@ import android.app.Fragment
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.annotation.RestrictTo
 import androidx.fragment.app.FragmentActivity
 import java.lang.ref.WeakReference
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class AbilityShadowFragment : Fragment() {
 
     init {

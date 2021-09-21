@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.ActivityCompat
 
-object RequestPermissionDelegate : ActivityCompat.PermissionCompatDelegate {
+internal object RequestPermissionDelegate : ActivityCompat.PermissionCompatDelegate {
     override fun requestPermissions(
         activity: Activity,
         permissions: Array<String?>,

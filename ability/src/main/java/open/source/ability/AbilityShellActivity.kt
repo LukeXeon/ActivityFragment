@@ -2,13 +2,10 @@ package open.source.ability
 
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
-import androidx.annotation.RestrictTo
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class AbilityShellActivity : AbilityCompatActivity(),
     ViewTreeObserver.OnPreDrawListener {
 

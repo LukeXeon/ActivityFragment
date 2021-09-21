@@ -7,9 +7,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.annotation.RestrictTo
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class WrapIntent : Intent {
     private constructor(parcel: Parcel) {
         readFromParcel(parcel)

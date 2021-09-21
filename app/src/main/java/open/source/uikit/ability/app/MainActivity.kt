@@ -1,6 +1,5 @@
 package open.source.uikit.ability.app
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -8,13 +7,18 @@ import android.os.SystemClock
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import open.source.ability.Ability
+import open.source.ability.useActivityCompatRequestPermissionsDelegate
 
 private var isT = true
 
 class MainActivity : AppCompatActivity() {
+
+    init {
+        useActivityCompatRequestPermissionsDelegate()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

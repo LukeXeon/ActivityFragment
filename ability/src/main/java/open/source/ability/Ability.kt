@@ -3,8 +3,6 @@
 package open.source.ability
 
 import android.app.Activity
-import android.app.ActivityManager
-import android.app.Application
 import android.app.LocalActivityManager
 import android.content.Context
 import android.content.Intent
@@ -14,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import java.util.*
 

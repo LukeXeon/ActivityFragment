@@ -22,15 +22,19 @@ open class AbilityCompatActivity : AppCompatActivity(), AbilityCompatDelegate.Fa
         abilityCompatDelegate.onApplyThemeResource(theme, resid, first)
     }
 
-    override fun superGetViewModelStore(): ViewModelStore {
+    final override fun superGetViewModelStore(): ViewModelStore {
         return super.getViewModelStore()
     }
 
-    override fun superIsChangingConfigurations(): Boolean {
+    final override fun superIsChangingConfigurations(): Boolean {
         return super.isChangingConfigurations()
     }
 
-    override fun superOnApplyThemeResource(theme: Resources.Theme, resId: Int, first: Boolean) {
+    final override fun superOnApplyThemeResource(
+        theme: Resources.Theme,
+        resId: Int,
+        first: Boolean
+    ) {
         return super.onApplyThemeResource(theme, resId, first)
     }
 }

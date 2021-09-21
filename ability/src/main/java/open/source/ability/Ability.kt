@@ -24,7 +24,7 @@ class Ability : Fragment() {
         private set
     internal val rootActivity: Activity?
         get() {
-            return getRootActivity(activity)
+            return activity.rootActivity
         }
     internal val currentActivity: Activity?
         get() = manager?.currentActivity
@@ -52,7 +52,7 @@ class Ability : Fragment() {
         AbilityShadowFragment.dispatchCreate(activity, who)
         manager?.dispatchCreate(savedInstanceState?.getBundle(ABILITY_STATE))
         val intent = intent
-        if (intent != null && manager?.currentActivity?.intent?.component != intent.component) {
+        if (intent != null && !intent.filterEquals(manager?.currentActivity?.intent)) {
             manager?.removeAllActivities()
             manager?.startActivity(who, WrapIntent(intent))
         }

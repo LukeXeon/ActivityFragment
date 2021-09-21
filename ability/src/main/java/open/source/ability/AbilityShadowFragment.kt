@@ -71,7 +71,7 @@ internal class AbilityShadowFragment : Fragment() {
     companion object {
 
         fun dispatchCreate(activity: Activity?, who: String?) {
-            val root = getRootActivity(activity) ?: return
+            val root = activity.rootActivity ?: return
             val fm = root.fragmentManager
             var f = fm.findFragmentByTag(who)
             if (f == null && !fm.isDestroyed) {
@@ -89,7 +89,7 @@ internal class AbilityShadowFragment : Fragment() {
         }
 
         fun dispatchDestroy(activity: Activity?, who: String?) {
-            val root = getRootActivity(activity) ?: return
+            val root = activity.rootActivity ?: return
             val fm = root.fragmentManager
             val f = fm.findFragmentByTag(who)
             if (f != null && !fm.isDestroyed) {

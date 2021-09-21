@@ -36,13 +36,14 @@ internal fun findTargetAbility(
     return null
 }
 
-internal fun getRootActivity(activity: Activity?): Activity? {
-    var act: Activity? = activity
-    while (act != null && act.parent != null) {
-        act = act.parent
+internal val Activity?.rootActivity: Activity?
+    get() {
+        var act: Activity? = this
+        while (act != null && act.parent != null) {
+            act = act.parent
+        }
+        return act
     }
-    return act
-}
 
 private val onActivityResultMethod by lazy {
     Activity::class.java
@@ -149,7 +150,7 @@ fun getAbilityCompatDelegate(
     default: AbilityCompatDelegate
 ): AbilityCompatDelegate {
     var delegate: AbilityCompatDelegate? = null
-    val root = getRootActivity(activity.parent) as? FragmentActivity
+    val root = activity.rootActivity as? FragmentActivity
     if (root != null) {
         val who = activity.embeddedID
         var ability: Ability? = null

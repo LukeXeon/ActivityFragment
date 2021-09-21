@@ -12,7 +12,7 @@ object RequestPermissionDelegate : ActivityCompat.PermissionCompatDelegate {
         requestCode: Int
     ): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val root = getRootActivity(activity) ?: return false
+            val root = activity.rootActivity ?: return false
             val who = activity.embeddedID
             val shadow = root.fragmentManager.findFragmentByTag(who) ?: return false
             @Suppress("DEPRECATION")

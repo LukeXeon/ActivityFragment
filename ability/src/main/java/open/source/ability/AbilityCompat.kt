@@ -5,7 +5,6 @@ package open.source.ability
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
-import android.app.Fragment
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -13,7 +12,6 @@ import android.os.Bundle
 import androidx.annotation.IntRange
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentManager
-import java.lang.reflect.InvocationTargetException
 
 internal fun findTargetAbility(
     fm: FragmentManager,
@@ -43,44 +41,6 @@ internal val Activity?.rootActivity: Activity?
         return act
     }
 
-private val onActivityResultMethod by lazy {
-    Activity::class.java
-        .getDeclaredMethod(
-            "onActivityResult",
-            Int::class.javaPrimitiveType,
-            Int::class.javaPrimitiveType,
-            Intent::class.java
-        ).apply {
-            isAccessible = true
-        }
-}
-
-internal fun Activity.onActivityResult(
-    requestCode: Int,
-    resultCode: Int,
-    data: Intent?
-) {
-    try {
-        onActivityResultMethod.invoke(this, requestCode, resultCode, data)
-    } catch (e: InvocationTargetException) {
-        throw e.targetException
-    }
-}
-
-private val mWhoField by lazy {
-    Fragment::class.java
-        .getDeclaredField("mWho")
-        .apply {
-            isAccessible = true
-        }
-}
-
-internal var Fragment.who: String?
-    get() = mWhoField.get(this) as? String
-    set(value) {
-        mWhoField.set(this, value)
-    }
-
 private val mEmbeddedIDField by lazy {
     Activity::class.java
         .getDeclaredField("mEmbeddedID")
@@ -91,7 +51,6 @@ private val mEmbeddedIDField by lazy {
 
 internal val Activity.embeddedID: String?
     get() = mEmbeddedIDField.get(this) as? String
-
 
 @JvmOverloads
 fun Context.startActivityAsAbility(
@@ -129,7 +88,6 @@ fun Context.startActivityAsAbility(
         this.startActivityForResult(shell, requestCode, options)
     }
 }
-
 
 fun requestPermissions(
     activity: Activity,

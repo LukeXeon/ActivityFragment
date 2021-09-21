@@ -70,6 +70,20 @@ internal class AbilityShadowFragment : Fragment() {
 
     companion object {
 
+        private val mWhoField by lazy {
+            Fragment::class.java
+                .getDeclaredField("mWho")
+                .apply {
+                    isAccessible = true
+                }
+        }
+
+        private var Fragment.who: String?
+            get() = mWhoField.get(this) as? String
+            set(value) {
+                mWhoField.set(this, value)
+            }
+
         fun dispatchCreate(activity: Activity?, who: String?) {
             val root = activity.rootActivity ?: return
             val fm = root.fragmentManager

@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 class Ability : Fragment() {
@@ -109,6 +110,31 @@ class Ability : Fragment() {
     }
 
     companion object {
+
+        private val onActivityResultMethod by lazy {
+            Activity::class.java
+                .getDeclaredMethod(
+                    "onActivityResult",
+                    Int::class.javaPrimitiveType,
+                    Int::class.javaPrimitiveType,
+                    Intent::class.java
+                ).apply {
+                    isAccessible = true
+                }
+        }
+
+        private fun Activity.onActivityResult(
+            requestCode: Int,
+            resultCode: Int,
+            data: Intent?
+        ) {
+            try {
+                onActivityResultMethod.invoke(this, requestCode, resultCode, data)
+            } catch (e: InvocationTargetException) {
+                throw e.targetException
+            }
+        }
+
         internal const val ABILITY_INTENT = "ability:intent"
         private const val ABILITY_WHO = "ability:who"
         private const val ABILITY_STATE = "ability:state"
